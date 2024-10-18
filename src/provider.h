@@ -1,4 +1,10 @@
+#ifndef __PROVIDER_H__
+#define __PROVIDER_H__
+
 #include <string.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /**
  * Gdb process structure
@@ -9,9 +15,9 @@
  *      - the output pipe to get output data of the process
  */
 struct gdb_proc {
-    int pid;
-    int input_pipe;
-    int output_pipe;
+    pid_t pid;
+    int* input_pipe;
+    int* output_pipe;
 };
 
 
@@ -21,7 +27,15 @@ struct gdb_proc {
  * @return the structure of the created process
  * or NULL if an error occured
  */
-struct gdb_proc gdb_connect();
+struct gdb_proc* gdb_connect();
+
+
+/**
+ * Clear the gdb process structure
+ * 
+ * @param proc a pointer to the structure to clear
+ */
+void gdb_close(struct gdb_proc* proc);
 
 
 /**
@@ -45,3 +59,7 @@ int gdb_send(char* input);
  * @return 0 if there is nothing to read, otherwise the size of the string placed in the buffer
  */
 int gdb_read(char* buffer);
+
+
+
+#endif

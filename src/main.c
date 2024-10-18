@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "provider.h"
 
 #include "lexer/lex.yy.c"
 
@@ -10,7 +11,7 @@
 
 int main(int argc, char const *argv[])
 {   
-    drop_debug = 1;
+    /*drop_debug = 1;
 
     FILE *f = fopen("../test/simple.cpp", "r");
     FILE *fr = fopen("../test/tmp.cpp", "a");
@@ -21,7 +22,11 @@ int main(int argc, char const *argv[])
 
     yylex(); // start lexer
 
-    printf("\n\nThere are %d lines\n", lines);
+    printf("\n\nThere are %d lines\n", lines);*/
+
+    struct gdb_proc* proc = gdb_connect();
+    if (proc != NULL) printf("Proc created successfully with pid %d\n", proc->pid);
+    else printf("gdb connection failed\n");
 
     return 0;
 }
