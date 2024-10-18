@@ -8,7 +8,7 @@ int main(int argc, char const *argv[])
 {
     
     int a, b, c;
-    int i = 0;  i
+    int i = 0; 
 
     for (int i = 0; i < 10; i++) {
         continue;

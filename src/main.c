@@ -10,6 +10,7 @@
 
 int main(int argc, char const *argv[])
 {   
+    drop_debug = 1;
 
     FILE *f = fopen("../test/simple.cpp", "r");
     FILE *fr = fopen("../test/tmp.cpp", "a");

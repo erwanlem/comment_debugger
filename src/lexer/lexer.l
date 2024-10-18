@@ -16,6 +16,8 @@
     /*********************/
 
 %{
+int drop_debug = 0;
+
 int lines = 1; // line of the file pointer
 
 FILE* lexfile; // Temporary file
@@ -42,22 +44,21 @@ MULTIAFFECT     (({AFFECT}|{IDENT}[" "]*),[" "]*)*({AFFECT}|{IDENT}[" "]*);
     /*** Lexer Rules ***/
     /*******************/
 
-{KEYWORDS}[" "]+{MULTIAFFECT}     { }
+{KEYWORDS}[" "]+{MULTIAFFECT}               {  }
 
     /* Variables declarations */
-{IDENT}[" "]+{MULTIAFFECT}        { fprintf(lexfile, "%s",  yytext); printf("NEW VARIABLE %s\n", yytext); }
+{IDENT}[" "]+{MULTIAFFECT}                  { fprintf(lexfile, "%s",  yytext); printf("NEW VARIABLE %s\n", yytext); }
 
 
     /* Debugger comments */
-"//"[" "]*@[" "]*{IDENT}          { printf("Debug comment %s\n", yytext); }
+"//"[" "]*@[" "]*{IDENT}([" "]*{IDENT})?    { if (!drop_debug) printf("Debug comment %s\n", yytext); 
+                                            }
 
-\n                                { fprintf(lexfile, "%s",  yytext); lines++; }
+\n                                          { fprintf(lexfile, "%s",  yytext); lines++; }
 
-<<EOF>>                           { return 0; }
+<<EOF>>                                     { return 0; }
 
-[^\n]                             { fprintf(lexfile, "%s",  yytext); }
-
-
+[^\n]                                       { fprintf(lexfile, "%s",  yytext); }
 
 
 %%
