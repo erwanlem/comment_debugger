@@ -16,7 +16,7 @@
  */
 struct gdb_proc {
     pid_t pid;
-    int* input_pipe;
+    int* input_pipe;                               
     int* output_pipe;
 };
 
@@ -47,18 +47,19 @@ void gdb_close(struct gdb_proc* proc);
  * 
  * @return 1 if the string was send, -1 if an error occured
  */
-int gdb_send(char* input);
+int gdb_send(struct gdb_proc* proc, char* input);
 
 
 /**
  * Read gdb output
  * 
  * @param
+ * `proc` a gdb process
  * `buffer` a pointer to the output buffer
  * 
  * @return 0 if there is nothing to read, otherwise the size of the string placed in the buffer
  */
-int gdb_read(char* buffer);
+int gdb_read(struct gdb_proc* proc, char* buffer);
 
 
 

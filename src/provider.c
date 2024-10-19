@@ -73,7 +73,7 @@ struct gdb_proc* gdb_connect()
       dup2(inpipefd[1], STDOUT_FILENO);
       dup2(inpipefd[1], STDERR_FILENO);
 
-      //ask kernel to deliver SIGTERM in case the parent dies
+      // ask kernel to deliver SIGTERM in case the parent dies
       prctl(PR_SET_PDEATHSIG, SIGTERM);
 
       //close unused pipe ends
@@ -111,4 +111,21 @@ struct gdb_proc* gdb_connect()
     free(outpipefd);
     free(proc);
     return NULL;
+}
+
+
+int gdb_send(struct gdb_proc *proc, char *input)
+{
+	if (proc == NULL) return -1;
+	else {
+		return write(proc->output_pipe[1], input, strlen(input));
+	}
+}
+
+
+int gdb_read(struct gdb_proc *proc, char *buffer)
+{
+	
+
+    return 0;
 }
