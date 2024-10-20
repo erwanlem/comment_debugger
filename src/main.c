@@ -28,5 +28,11 @@ int main(int argc, char const *argv[])
     if (proc != NULL) printf("Proc created successfully with pid %d\n", proc->pid);
     else printf("gdb connection failed\n");
 
+    gdb_send(proc, "help\n");
+    gdb_send(proc, "quit\n");
+
+    gdb_read(proc);
+    gdb_close(proc);
+
     return 0;
 }

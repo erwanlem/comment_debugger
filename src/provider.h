@@ -59,7 +59,7 @@ int gdb_send(struct gdb_proc* proc, char* input);
  * 
  * @return 0 if there is nothing to read, otherwise the size of the string placed in the buffer
  */
-int gdb_read(struct gdb_proc* proc, char* buffer);
+int gdb_read(struct gdb_proc* proc);
 
 
 
