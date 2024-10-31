@@ -16,18 +16,16 @@
     /*********************/
 
 %{
-#define YYSTYPE char*
-extern YYSTYPE yylval;
+int drop_debug = 0;
 
-#include "y.tab.h"
-#include <string.h>
+int lines = 1; // line of the file pointer
 
-char* cpy;
+FILE* lexfile; // Temporary file
 
 %}
 
     /* Variable name (Simplified for tests) */
-ALPHANUM           [a-zA-Z0-9]+
+IDENT           [a-zA-Z0-9]+
 
 %option yylineno
 
@@ -38,21 +36,9 @@ ALPHANUM           [a-zA-Z0-9]+
     /*******************/
 
     /* Debugger comments */
-"//"                                        { return COMMENT; }
+"//"[" "]*@[" "]*{IDENT}([" "]*{IDENT})?    { fprintf(lexfile, "%s;\n", yytext); }
 
-{ALPHANUM}                                  { cpy = (char *)calloc(strlen(yytext)+1,sizeof(char));
-                                              strcpy(cpy, yytext); 
-                                              yylval = cpy; 
-                                              return IDENT; 
-                                            }
-
-","                                         { return COMMA; }
-
-"@"                                         { return AT; }
-
-";"                                         { return SEMI; }
-
-\n                                          { }
+\n                                          { lines++; }
 
 <<EOF>>                                     { return 0; }
 
@@ -65,3 +51,18 @@ ALPHANUM           [a-zA-Z0-9]+
     /*****************/
     /*** User code ***/
     /*****************/
+
+
+int yywrap() {}
+
+FILE* getCommentLines(char* path, FILE* out) {
+    FILE *f = fopen(path, "r");
+
+    layer0in = f;
+
+    lexfile = out;
+
+    layer0lex();
+
+    fclose(f);
+}

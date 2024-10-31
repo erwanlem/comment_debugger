@@ -2,8 +2,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "provider.h"
+#include "command.h"
+#include "lexer/lexer_comment.h"
 
-#include "lexer/lex.yy.c"
+int execute(struct command* c) {
+    
+    
+    return 0;
+}
+
 
 
 
@@ -11,9 +18,8 @@
 
 int main(int argc, char const *argv[])
 {   
-    /*drop_debug = 1;
 
-    FILE *f = fopen("../test/simple.cpp", "r");
+    /*FILE *f = fopen("../test/simple.cpp", "r");
     FILE *fr = fopen("../test/tmp.cpp", "a");
 
     lexfile = fr; // set temporary file
@@ -22,17 +28,31 @@ int main(int argc, char const *argv[])
 
     yylex(); // start lexer
 
-    printf("\n\nThere are %d lines\n", lines);*/
+    printf("\n\nThere are %d lines\n", lines);
+*/
+    char* ptr;
+    size_t size;
 
-    struct gdb_proc* proc = gdb_connect();
-    if (proc != NULL) printf("Proc created successfully with pid %d\n", proc->pid);
-    else printf("gdb connection failed\n");
+    //FILE *f = fopen("../test/simple.cpp", "r");
 
-    gdb_send(proc, "help\n");
-    gdb_send(proc, "quit\n");
+    FILE* tmp = open_memstream(&ptr, &size);
 
-    gdb_read(proc);
-    gdb_close(proc);
+    //yyin = f;
+
+    //lexfile = tmp;
+
+    getCommentLines("../test/simple.cpp", tmp);
+    
+    fflush(tmp);
+
+    printf("%s\n\n", ptr);
+
+    parseComment(tmp);
+
+    fclose(tmp);
+    //struct command* c = parse_input(argc, argv);
+
+    //free_command(c);
 
     return 0;
 }
