@@ -26,10 +26,10 @@ char* cpy;
 
 %}
 
-    /* Variable name (Simplified for tests) */
-ALPHANUM           [a-zA-Z0-9]+
 
-%option yylineno
+    /* Variable name (Simplified for tests) */
+NUM                [0-9]+
+ALPHANUM           [a-zA-Z0-9]+
 
 %%
 
@@ -38,11 +38,13 @@ ALPHANUM           [a-zA-Z0-9]+
     /*******************/
 
     /* Debugger comments */
-"//"                                        { return COMMENT; }
+"//"                                        {  return COMMENT; }
+
+{NUM}                                       { return NUMBER; }
 
 {ALPHANUM}                                  { cpy = (char *)calloc(strlen(yytext)+1,sizeof(char));
-                                              strcpy(cpy, yytext); 
-                                              yylval = cpy; 
+                                              strcpy(cpy, yytext);
+                                              yylval = cpy;
                                               return IDENT; 
                                             }
 
@@ -51,6 +53,10 @@ ALPHANUM           [a-zA-Z0-9]+
 "@"                                         { return AT; }
 
 ";"                                         { return SEMI; }
+
+"("                                         { return LPAR; }
+
+")"                                         { return RPAR; }
 
 \n                                          { }
 

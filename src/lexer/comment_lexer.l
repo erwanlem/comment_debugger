@@ -16,9 +16,10 @@
     /*********************/
 
 %{
-int drop_debug = 0;
 
-int lines = 1; // line of the file pointer
+#include "y.tab.h"
+
+int lineno = 1; // line of the file pointer
 
 FILE* lexfile; // Temporary file
 
@@ -27,7 +28,6 @@ FILE* lexfile; // Temporary file
     /* Variable name (Simplified for tests) */
 IDENT           [a-zA-Z0-9]+
 
-%option yylineno
 
 %%
 
@@ -36,13 +36,13 @@ IDENT           [a-zA-Z0-9]+
     /*******************/
 
     /* Debugger comments */
-"//"[" "]*@[" "]*{IDENT}([" "]*{IDENT})?    { fprintf(lexfile, "%s;\n", yytext); }
+"//"[" "]*@[" "]*({IDENT}([" "]*{IDENT})?)?     { fprintf(lexfile, "(%d)%s;\n", lineno, yytext); }
 
-\n                                          { lines++; }
+\n                                              { lineno++; }
 
-<<EOF>>                                     { return 0; }
+<<EOF>>                                         { return 0; }
 
-[^\n]                                       { }
+[^\n]                                           { }
 
 
 %%
@@ -56,7 +56,7 @@ IDENT           [a-zA-Z0-9]+
 int yywrap() {}
 
 FILE* getCommentLines(char* path, FILE* out) {
-    FILE *f = fopen(path, "r");
+    FILE* f = fopen(path, "r");
 
     layer0in = f;
 
@@ -64,5 +64,5 @@ FILE* getCommentLines(char* path, FILE* out) {
 
     layer0lex();
 
-    fclose(f);
+    //fclose(f);
 }

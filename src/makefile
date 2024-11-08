@@ -1,12 +1,12 @@
 
-main: y.tab.h lex.yy.c lex.comment.c main.o provider.o command.o 
-	gcc -o main main.o provider.o command.o lexer/out/lex.yy.c lexer/out/y.tab.c lexer/out/lex.comment.c
+main: lex.yy.o lex.comment.o comment.o y.tab.o main.o provider.o command.o 
+	g++ -o main main.o provider.o command.o comment.o lexer/out/lex.yy.o lexer/out/y.tab.o lexer/out/lex.comment.o
 
 provider.o: provider.c provider.h
 	gcc -c provider.c
 
-main.o: main.c
-	gcc -c main.c
+main.o: main.cpp comment_read.h
+	g++ -c main.cpp
 
 lex.yy.c: lexer/lexer.l
 	flex -o lexer/out/lex.yy.c lexer/lexer.l
@@ -17,9 +17,18 @@ lex.comment.c: lexer/comment_lexer.l
 command.o: command.c command.h
 	gcc -c command.c
 
-y.tab.h: lex.yy.c
-	cd lexer; yacc -o out/y.tab.c -d -v parser.y; \
-	cd ..
+comment.o:
+	gcc -c lexer/comment.c
+
+y.tab.o:
+	cd lexer/; yacc -o out/y.tab.c -d parser.y;\
+	cd out/; gcc -c y.tab.c; cd ../..
+
+lex.yy.o: lex.yy.c y.tab.o
+	cd lexer/out/; gcc -c lex.yy.c; cd ../..
+
+lex.comment.o: lex.comment.c
+	cd lexer/out/; gcc -c lex.comment.c; cd ../..
 
 clean:
 	rm *.o

@@ -4,8 +4,9 @@
 #include<string.h>
 #include<stdlib.h>
 #include<ctype.h>
+#include "../comment.h"
 
-extern int yylineno;
+extern int lineno;
 extern FILE* yyin;
 
 %}
@@ -16,25 +17,12 @@ extern FILE* yyin;
 %token AT
 %token COMMA
 %token SEMI
+%token NUMBER
+%token LPAR RPAR
 
 %start instructions
 
 %%
-
-/**
-    Grammar
-
-    instructions:
-        instr*
-
-    instr:
-        "//" '@' IDENT (variable)?
-
-    variable:
-        IDENT ',' variable
-        | IDENT
-
-*/
 
 instructions:
     instr SEMI instructions
@@ -42,8 +30,9 @@ instructions:
     ;
 
 instr:
-    | COMMENT AT IDENT variable   { printf("(0) New instr // @ %s %s\n", $3, $4); }
-    | COMMENT AT IDENT            { printf("(1) New instr // @ %s\n", $3); }
+      LPAR NUMBER RPAR COMMENT AT IDENT variable   { new_comment( $6, $7, lineno); printf("%d\n", lineno); }
+    | LPAR NUMBER RPAR COMMENT AT IDENT            { new_comment( $6, NULL, lineno); printf("%d\n", lineno); }
+    | LPAR NUMBER RPAR COMMENT AT                  { new_comment( NULL, NULL, lineno); printf("%d\n", lineno); }
     ;
 
 variable:
@@ -54,12 +43,15 @@ variable:
 
 %%
 
-int yyerror(char* s)
+int yyerror(char const* s)
 {
-  fprintf(stderr, "Parse error : %s (line %d)\n",s ,yylineno);
+  fprintf(stderr, "Parse error : %s (line %d)\n",s ,lineno);
 }
 
 void parseComment(FILE* in) {
+    list_comments.comment_list = (struct comment**) malloc(0);
+    list_comments.nbComments = 0;
+
     yyin = in;
     yyparse();
 }

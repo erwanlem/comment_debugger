@@ -3,23 +3,21 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 struct comment {
     char* name;
-    char** var;
+    char* var;
     int line;
 };
 
+struct comments {
+    struct comment** comment_list;
+    int nbComments;
+};
 
+extern struct comments list_comments;
 
-struct comment* create_comment(char* name, char** vars, int line) {
-    struct comment* c = (struct comment*) malloc(sizeof(struct comment));
-
-    c->line = line;
-    c->name = name;
-    c->var = vars;
-
-    return c;
-}
+void new_comment(char* name, char* vars, int line);
 
 #endif
