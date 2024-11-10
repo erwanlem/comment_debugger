@@ -1,9 +1,9 @@
 
-main: lex.yy.o lex.comment.o comment.o y.tab.o main.o provider.o command.o 
-	g++ -o main main.o provider.o command.o comment.o lexer/out/lex.yy.o lexer/out/y.tab.o lexer/out/lex.comment.o
+main: lex.yy.o lex.comment.o comment.o y.tab.o provider.o command.o provider.h
+	g++ -o main main.cpp provider.o command.o comment.o lexer/out/lex.yy.o lexer/out/y.tab.o lexer/out/lex.comment.o
 
-provider.o: provider.c provider.h
-	gcc -c provider.c
+provider.o: provider.cpp provider.h
+	gcc -c provider.cpp
 
 main.o: main.cpp comment_read.h
 	g++ -c main.cpp
@@ -11,7 +11,7 @@ main.o: main.cpp comment_read.h
 lex.yy.c: lexer/lexer.l
 	flex -o lexer/out/lex.yy.c lexer/lexer.l
 
-lex.comment.c: lexer/comment_lexer.l
+lex.comment.c: lexer/comment_lexer.l y.tab.o
 	flex -Player0 -o lexer/out/lex.comment.c lexer/comment_lexer.l
 
 command.o: command.c command.h
@@ -21,7 +21,7 @@ comment.o:
 	gcc -c lexer/comment.c
 
 y.tab.o:
-	cd lexer/; yacc -o out/y.tab.c -d parser.y;\
+	cd lexer/; bison -o out/y.tab.c -d parser.y;\
 	cd out/; gcc -c y.tab.c; cd ../..
 
 lex.yy.o: lex.yy.c y.tab.o

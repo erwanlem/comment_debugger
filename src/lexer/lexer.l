@@ -16,8 +16,7 @@
     /*********************/
 
 %{
-#define YYSTYPE char*
-extern YYSTYPE yylval;
+
 
 #include "y.tab.h"
 #include <string.h>
@@ -38,13 +37,14 @@ ALPHANUM           [a-zA-Z0-9]+
     /*******************/
 
     /* Debugger comments */
-"//"                                        {  return COMMENT; }
+"//"                                        { return COMMENT; }
 
-{NUM}                                       { return NUMBER; }
+{NUM}                                       { yylval.intval = atoi(yytext);
+                                             return NUMBER; }
 
 {ALPHANUM}                                  { cpy = (char *)calloc(strlen(yytext)+1,sizeof(char));
                                               strcpy(cpy, yytext);
-                                              yylval = cpy;
+                                              yylval.strval = cpy;
                                               return IDENT; 
                                             }
 

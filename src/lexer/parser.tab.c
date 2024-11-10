@@ -77,11 +77,9 @@
 
 extern int lineno;
 extern FILE* yyin;
-int yylex (void);
-void yyerror (char const *);
 
 
-#line 85 "out/y.tab.c"
+#line 83 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -104,7 +102,7 @@ void yyerror (char const *);
 #  endif
 # endif
 
-#include "y.tab.h"
+#include "parser.tab.h"
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -510,7 +508,7 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    37,    37,    38,    42,    43,    44,    48,    49
+       0,    35,    35,    36,    40,    41,    42,    46,    47
 };
 #endif
 
@@ -1073,25 +1071,25 @@ yyreduce:
   switch (yyn)
     {
   case 4: /* instr: LPAR NUMBER RPAR COMMENT AT IDENT variable  */
-#line 42 "parser.y"
-                                                   { new_comment( (yyvsp[-1].strval), (yyvsp[0].strval), (yyvsp[-5].intval)); }
-#line 1079 "out/y.tab.c"
+#line 40 "parser.y"
+                                                   { new_comment( (yyvsp[-1].strval).strval, (yyvsp[0].strval).strval, (yyvsp[-5].intval).intval); }
+#line 1077 "parser.tab.c"
     break;
 
   case 5: /* instr: LPAR NUMBER RPAR COMMENT AT IDENT  */
-#line 43 "parser.y"
-                                                   { new_comment( (yyvsp[0].strval), NULL,  (yyvsp[-4].intval)); }
-#line 1085 "out/y.tab.c"
+#line 41 "parser.y"
+                                                   { new_comment( (yyvsp[0].strval).strval, NULL,  (yyvsp[-4].intval).intval); }
+#line 1083 "parser.tab.c"
     break;
 
   case 6: /* instr: LPAR NUMBER RPAR COMMENT AT  */
-#line 44 "parser.y"
-                                                   { new_comment( NULL, NULL,  (yyvsp[-3].intval)); }
-#line 1091 "out/y.tab.c"
+#line 42 "parser.y"
+                                                   { new_comment( NULL, NULL,  (yyvsp[-3].intval).intval); }
+#line 1089 "parser.tab.c"
     break;
 
 
-#line 1095 "out/y.tab.c"
+#line 1093 "parser.tab.c"
 
       default: break;
     }
@@ -1284,10 +1282,10 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 53 "parser.y"
+#line 51 "parser.y"
 
 
-void yyerror(char const* s)
+int yyerror(char const* s)
 {
   fprintf(stderr, "Parser error : %s (line %d)\n",s ,lineno);
 }

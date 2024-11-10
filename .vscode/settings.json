@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.l": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "string": "cpp"
     }
 }

@@ -17,7 +17,6 @@
 
 %{
 
-#include "y.tab.h"
 
 int lineno = 1; // line of the file pointer
 

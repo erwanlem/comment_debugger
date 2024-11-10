@@ -1,12 +1,12 @@
-/*
-#include <stdlib.h>
-#include <sys/wait.h>
+/**
+ * This file provides gdb services by creating and controlling the connection with gdb.
+ * 
+ * This file has a C like implementation due to the original C implementation of this program.
+ * 
+ */
 
-#include <string.h>
-#include <sys/wait.h>
 
 
-*/
 #include <sys/prctl.h>
 #include "provider.h"
 #include <sys/wait.h>
@@ -16,42 +16,21 @@
 #include <errno.h>
 #include <stdio.h> 
 
-/*
+// C++
+#include <string>
 
-  // Now, you can write to outpipefd[1] and read from inpipefd[0] :  
-  while(1)
-  {
-
-    /*printf("Enter message to send\n");
-    scanf("%s", msg);
-    if(strcmp(msg, "exit") == 0) break;
-    
-    write(outpipefd[1], "-break-insert 8\n", strlen("-break-insert 8\n"));
-    write(outpipefd[1], "-break-commands 1 \"print n\" \"continue\"\n", strlen("-break-commands 1 \"print n\" \"continue\"\n"));
-    write(outpipefd[1], "-exec-run\n", strlen("-exec-run\n"));
-    write(outpipefd[1], "quit\n", strlen("quit\n"));
-
-    while ((n=read(inpipefd[0], buf, 512))>0)
-      printf("Received answer: %s\n", buf);
-
-    memset(buf, 0, 512);
-  }
-
-  kill(pid, SIGKILL); //send SIGKILL signal to the child process
-  waitpid(pid, &status, 0);
-}
-*/
+using namespace std;
 
 
-struct gdb_proc* gdb_connect()
+gdb_proc* gdb_connect()
 {
     int* inpipefd, *outpipefd;
-    struct gdb_proc* proc;
+    gdb_proc* proc;
 
     // Allocations in heap
     inpipefd = (int*) malloc(sizeof(int) * 2);
     outpipefd = (int*) malloc(sizeof(int) * 2);
-    proc = (struct gdb_proc*) malloc(sizeof(struct gdb_proc));
+    proc = (gdb_proc*) malloc(sizeof(struct gdb_proc));
 
     // child pid
     pid_t pid = 0;
@@ -85,7 +64,7 @@ struct gdb_proc* gdb_connect()
 		close(inpipefd[0]);
 
 		//replace tee with your process
-		execl("/usr/bin/gdb", "gdb", "test", "--interpreter=mi4", "--silent", (char*) NULL);
+		execl("/usr/bin/gdb", "gdb", "../gdb_test/test", "--interpreter=mi4", "--silent", (char*) NULL);
 
 		// Nothing below this line should be executed by child process. If so, 
 		// it means that the execl function wasn't successfull, so lets exit:
@@ -118,7 +97,15 @@ struct gdb_proc* gdb_connect()
 }
 
 
-int gdb_send(struct gdb_proc *proc, char *input)
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+int gdb_send(struct gdb_proc *proc, char const* input)
 {
 	if (proc == NULL) return -1;
 	else {
@@ -128,14 +115,21 @@ int gdb_send(struct gdb_proc *proc, char *input)
 
 
 
-int gdb_read(struct gdb_proc *proc)
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+string gdb_read(struct gdb_proc *proc)
 {
-	char buf[512];
+	string fullBuff = "";
+	char buf[1024];
 	int n;
 
 	while (1) {
-		n=read(proc->input_pipe[0], buf, 512);
-		//printf("LENGTH = %d\n", n);
+		n=read(proc->input_pipe[0], buf, 1024);
 		switch (n) {
 			case -1:
 				if (errno == EAGAIN) 
@@ -146,21 +140,30 @@ int gdb_read(struct gdb_proc *proc)
 				goto quit;
 			default:
 				//printf("LENGTH = %d\n", n);
-				printf("Received answer: %s\n", buf);	
+				fullBuff = fullBuff + buf;
+				//printf("Received answer: %s\n", buf);	
 		}
-		memset(buf, 0, 512);
+		memset(buf, 0, 1024);
 	}
 
 	quit:
 
 
-    return 0;
+    return fullBuff;
 }
 
 
-void gdb_close(struct gdb_proc* proc) {
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+
+void gdb_close(gdb_proc* proc) {
+	char const* quit = "quit";
+
 	if (kill(proc->pid, 0) == 0)
-		gdb_send(proc, "quit");
+		gdb_send(proc, quit);
 
 	close(proc->output_pipe[1]);
 	close(proc->input_pipe[0]);

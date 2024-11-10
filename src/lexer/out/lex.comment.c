@@ -717,16 +717,15 @@ char *yytext;
     /**** Definitions ****/
     /*********************/
 
-#include "y.tab.h"
 
 int lineno = 1; // line of the file pointer
 
 FILE* lexfile; // Temporary file
 
-#line 727 "lexer/out/lex.comment.c"
-#line 29 "lexer/comment_lexer.l"
+#line 726 "lexer/out/lex.comment.c"
+#line 28 "lexer/comment_lexer.l"
     /* Variable name (Simplified for tests) */
-#line 730 "lexer/out/lex.comment.c"
+#line 729 "lexer/out/lex.comment.c"
 
 #define INITIAL 0
 
@@ -943,7 +942,7 @@ YY_DECL
 		}
 
 	{
-#line 33 "lexer/comment_lexer.l"
+#line 32 "lexer/comment_lexer.l"
 
 
     /*******************/
@@ -951,7 +950,7 @@ YY_DECL
     /*******************/
 
     /* Debugger comments */
-#line 955 "lexer/out/lex.comment.c"
+#line 954 "lexer/out/lex.comment.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1010,30 +1009,30 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 40 "lexer/comment_lexer.l"
+#line 39 "lexer/comment_lexer.l"
 { fprintf(lexfile, "(%d)%s;\n", lineno, yytext); }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 42 "lexer/comment_lexer.l"
+#line 41 "lexer/comment_lexer.l"
 { lineno++; }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 44 "lexer/comment_lexer.l"
+#line 43 "lexer/comment_lexer.l"
 { return 0; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 46 "lexer/comment_lexer.l"
+#line 45 "lexer/comment_lexer.l"
 { }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 49 "lexer/comment_lexer.l"
+#line 48 "lexer/comment_lexer.l"
 ECHO;
 	YY_BREAK
-#line 1037 "lexer/out/lex.comment.c"
+#line 1036 "lexer/out/lex.comment.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2036,7 +2035,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 49 "lexer/comment_lexer.l"
+#line 48 "lexer/comment_lexer.l"
 
 
 
