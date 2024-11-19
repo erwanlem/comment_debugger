@@ -4,8 +4,8 @@
  * Functions have a C like implementation due to the original C implementation of this program.
  * 
  */
-#ifndef __PROVIDER_H__
-#define __PROVIDER_H__
+#ifndef __PROVIDER__H__
+#define __PROVIDER__H__
 
 #include <string.h>
 #include <unistd.h>
@@ -13,8 +13,8 @@
 #include <stdlib.h>
 
 #include <string>
+#include <mutex>
 
-using namespace std;
 
 /**
  * Gdb process structure
@@ -34,10 +34,12 @@ struct gdb_proc {
 /**
  * Create a process running gdb
  * 
+ * @param path a path to the program executable
+ * 
  * @return the structure of the created process
  * or NULL if an error occured
  */
-gdb_proc* gdb_connect();
+gdb_proc* gdb_connect(std::string path);
 
 
 /**
@@ -67,10 +69,8 @@ int gdb_send(gdb_proc* proc, char const* input);
  * `proc` a gdb process
  * `buffer` a pointer to the output buffer
  * 
- * @return 0 if there is nothing to read, otherwise the size of the string placed in the buffer
  */
-string gdb_read(gdb_proc* proc);
-
+void gdb_read(gdb_proc* proc, std::string &fullBuff, std::mutex &m);
 
 
 #endif

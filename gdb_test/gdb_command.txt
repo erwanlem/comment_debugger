@@ -9,6 +9,8 @@ set print thread-events off
 ^done,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x000000000000117c",func="main(int, char const**)",file="test.cpp",fullname="/home/erwan/Perso/comment_debugger/gdb_test/test.cpp",line="5",thread-groups=["i1"],times="0",original-location="main"}
 (gdb)
 
+-break-commands 1 "print v" "continue"
+
 -exec-continue
 ^error,msg="The program is not being run."
 (gdb)

@@ -1,37 +1,37 @@
-#include <string>
-#include <iostream>
-#include <vector>
+#include "input.h"
 #include "provider.h"
-#include "command.h"
-#include "comment_read.h"
+#include "reader.h"
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include <atomic>
+#include <thread>
+#include "cplusplus/interface.h"
 
 using namespace std;
 
+int
+main(int argc, char const* argv[])
+{
+	Input input;
+	
+	input.interpret(argc, argv);
 
-int main(int argc, char const *argv[])
-{   
-    /*string path = "../test/simple.cpp";
+	/*
+	cout << "Files :" << endl;
+	for (string s : instruction.getFiles()) {
+		cout << s << endl;
+	}
+	cout << endl;
+	cout << "Flags :" << endl;
+	for (string s : instruction.getFlags()) {
+		cout << s << endl;
+	}*/
+	
+	vector<Comment> debug_instr = readComments(input.getFiles()[0]);
 
-    vector<Comment> c = readComments(path);
+  	cplusplus::run(debug_instr);
 
-
-    for (Comment comm : c) {
-        cout << comm.getName() << ", " << comm.getVar() << ", " << comm.getLine() << endl;
-    }*/
-   char const* str1 = "-break-insert main\n";
-   char const* str2 = "-exec-continue\n";
-   char const* str3 = "-exec-run\n";
-
-   struct gdb_proc* gdb = gdb_connect();
-
-   gdb_send(gdb, str1);
-   gdb_send(gdb, str2);
-   gdb_send(gdb, str3);
-   gdb_send(gdb, "quit\n");
-
-   cout << gdb_read(gdb) << endl;
-
-   gdb_close(gdb);
-
-    return 0;
+	return 0;
 }

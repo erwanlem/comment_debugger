@@ -46,7 +46,7 @@
 output:
     out_of_band_record output
     | result_record GDB NL {}
-    | result_record out_of_band_record GDB NL { yyerrok; }
+    | result_record out_of_band_record GDB NL {  }
     | GDB NL
     | error NL
     ;
@@ -65,12 +65,14 @@ comma_result:
 
 out_of_band_record:
     async_record
-    | stream_record {};
+    | stream_record {}
+    ;
 
 async_record:
     exec_async_output
     | status_async_output
-    | notify_async_output;
+    | notify_async_output
+    ;
 
 exec_async_output:
     STAR async_output NL {}
@@ -119,10 +121,12 @@ async_class:
     ;
 
 result:
-    variable EQUAL value;
+    variable EQUAL value
+    ;
 
 variable:
-    STRING;
+    STRING
+    ;
 
 value:
     const_

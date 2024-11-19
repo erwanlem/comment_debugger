@@ -3,12 +3,14 @@
 #include<string.h>
 #include<stdlib.h>
 #include<ctype.h>
-#include "../comment.h"
+#include "../../reader.h"
+
 
 extern int lineno;
 extern FILE* yyin;
 int yylex (void);
 void yyerror (char const *);
+void new_comment(char* name, char* vars, int line);
 
 %}
 
@@ -33,19 +35,19 @@ void yyerror (char const *);
 
 %%
 
-instructions:
-    instr SEMI instructions
+instructions
+    : instr SEMI instructions
     | instr SEMI
     ;
 
-instr:
-      LPAR NUMBER RPAR COMMENT AT IDENT variable   { new_comment( $6, $7, $2); }
+instr
+    : LPAR NUMBER RPAR COMMENT AT IDENT variable   { new_comment( $6, $7, $2); }
     | LPAR NUMBER RPAR COMMENT AT IDENT            { new_comment( $6, NULL,  $2); }
     | LPAR NUMBER RPAR COMMENT AT                  { new_comment( NULL, NULL,  $2); }
     ;
 
-variable:
-    IDENT COMMA variable
+variable
+    : IDENT COMMA variable
     | IDENT
     ;
 

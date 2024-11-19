@@ -22,8 +22,11 @@
 using namespace std;
 
 
-gdb_proc* gdb_connect()
+gdb_proc* gdb_connect(string path)
 {
+	// This function was originally produced for a C program
+	// It explains the use of malloc
+
     int* inpipefd, *outpipefd;
     gdb_proc* proc;
 
@@ -64,7 +67,7 @@ gdb_proc* gdb_connect()
 		close(inpipefd[0]);
 
 		//replace tee with your process
-		execl("/usr/bin/gdb", "gdb", "../gdb_test/test", "--interpreter=mi4", "--silent", (char*) NULL);
+		execl("/usr/bin/gdb", "gdb", path, "--interpreter=mi4", "--silent", (char*) NULL);
 
 		// Nothing below this line should be executed by child process. If so, 
 		// it means that the execl function wasn't successfull, so lets exit:
@@ -122,9 +125,8 @@ int gdb_send(struct gdb_proc *proc, char const* input)
 
 
 
-string gdb_read(struct gdb_proc *proc)
+void gdb_read(struct gdb_proc *proc, string &fullBuff, std::mutex& m)
 {
-	string fullBuff = "";
 	char buf[1024];
 	int n;
 
@@ -132,24 +134,22 @@ string gdb_read(struct gdb_proc *proc)
 		n=read(proc->input_pipe[0], buf, 1024);
 		switch (n) {
 			case -1:
-				if (errno == EAGAIN) 
+				if (errno == EAGAIN) // End of the pipe
 					break;
 				else
 					break;
 			case 0:
-				goto quit;
+				return ;
 			default:
-				//printf("LENGTH = %d\n", n);
+				// Lock to prevent from data race
+				m.lock();
 				fullBuff = fullBuff + buf;
-				//printf("Received answer: %s\n", buf);	
+				m.unlock();
 		}
+		// clear buffer
 		memset(buf, 0, 1024);
 	}
 
-	quit:
-
-
-    return fullBuff;
 }
 
 
@@ -160,10 +160,9 @@ string gdb_read(struct gdb_proc *proc)
 
 
 void gdb_close(gdb_proc* proc) {
-	char const* quit = "quit";
 
 	if (kill(proc->pid, 0) == 0)
-		gdb_send(proc, quit);
+		kill(proc->pid, SIGKILL);
 
 	close(proc->output_pipe[1]);
 	close(proc->input_pipe[0]);

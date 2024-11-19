@@ -8,3 +8,23 @@ The project has the following structure:
 - **parser.y** : *YACC* parser for gdb grammar.
 - **parser.h** : parse gdb output
 - **print.h** : get structured outputs from `reader.h` and print them in an appropiate format.
+
+
+The structure will be as defined:
+
+- Read user input
+- Extract debug instructions from user files
+
+For each language:
+- Generate debug instructions (depends on the debugger)
+- Send instructions to debugger
+- Parse debugger outputs
+- Print outputs with the correct format
+
+
+For each language when need a common API.
+The API is defined by:
+``` C++
+void start_debug( vector<Comment> comments );
+// Work in progress
+```
