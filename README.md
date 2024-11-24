@@ -50,3 +50,16 @@ i           0x0000003     1
 ```
 
 Another feature of the debugger is to remove every debug comment whenever you want by typing just one command.
+
+
+## Installation
+
+The current version of the debugger can be build using CMake.
+
+``` Shell
+~/comment_debugger/$ mkdir build
+~/comment_debugger/$ cd build
+~/comment_debugger/$ cmake ../src/
+~/comment_debugger/$ make install
+~/comment_debugger/$ ../install/bin/debugTool file.cpp
+```

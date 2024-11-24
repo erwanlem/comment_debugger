@@ -1,4 +1,4 @@
-#include "comment.h"
+#include "comments.h"
 
 /**
  * Create a new comment allocated in heap.

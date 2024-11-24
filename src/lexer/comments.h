@@ -1,5 +1,5 @@
-#ifndef __PARSER__COMMENT_H__
-#define __PARSER__COMMENT_H__
+#ifndef __PARSER__COMMENTS_H__
+#define __PARSER__COMMENTS_H__
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -20,9 +20,7 @@ struct comments {
     int nbComments;
 };
 
-
-
-struct comments list_comments;
+extern struct comments list_comments;
 
 void new_comment(char* name, char* vars, int line);
 

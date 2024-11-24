@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "../provider.h"
-#include "command.h"
+#include "commands.h"
 #include "../reader.h"
 #include <thread>
 

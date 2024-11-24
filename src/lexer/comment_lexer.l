@@ -52,16 +52,15 @@ IDENT           [a-zA-Z0-9]+
     /*****************/
 
 
-int yywrap() {}
+int yywrap() {
+    return 1;
+}
 
-FILE* getCommentLines(char* path, FILE* out) {
+void getCommentLines(char const* path, FILE* out) {
     FILE* f = fopen(path, "r");
 
     layer0in = f;
-
     lexfile = out;
 
     layer0lex();
-
-    //fclose(f);
 }

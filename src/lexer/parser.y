@@ -3,7 +3,8 @@
 #include<string.h>
 #include<stdlib.h>
 #include<ctype.h>
-#include "../../reader.h"
+#include "comments.h"
+//#include "../../reader.h"
 
 
 extern int lineno;
@@ -11,6 +12,7 @@ extern FILE* yyin;
 int yylex (void);
 void yyerror (char const *);
 void new_comment(char* name, char* vars, int line);
+struct comments list_comments;
 
 %}
 
@@ -59,12 +61,15 @@ void yyerror(char const* s)
   fprintf(stderr, "Parser error : %s (line %d)\n",s ,lineno);
 }
 
-void parseComment(FILE* in) {
+struct comments parseComment(FILE* in) {
     list_comments.comment_list = (struct comment**) malloc(0);
     list_comments.nbComments = 0;
 
     yyin = in;
+
     yyparse();
+
+    return list_comments;
 }
 
 int yywrap()

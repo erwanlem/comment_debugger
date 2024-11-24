@@ -18,8 +18,9 @@
 %{
 
 
-#include "y.tab.h"
+#include "parser.h"
 #include <string.h>
+
 
 char* cpy;
 
@@ -71,3 +72,5 @@ ALPHANUM           [a-zA-Z0-9]+
     /*****************/
     /*** User code ***/
     /*****************/
+
+int yywrap(){return(1);}
