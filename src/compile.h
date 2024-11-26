@@ -2,6 +2,21 @@
 #include <string.h>
 #include "input.h"
 
+/**
+ * This file run the compilation of the input
+ * 
+ * The main issue in compilation is to find the right compiler for the input.
+ * We define a list of supported compilers and we check if they are available 
+ * on the system. If it is we run otherwise we throw error.
+ * If user wants to compile using an unsupported compiler he can suggest it 
+ * with the option `--compiler=myCompiler`.
+ * 
+ * Actually we just put the compiler name in front of the flags/file part of the input.
+ * 
+ */
+
+
+
 
 // Define C and C++ compilers
 #define GCC         "gcc"
@@ -11,62 +26,31 @@
 
 
 
-bool commandExist(std::string command) {
-    std::string c = "which -s " + command;
-    return !system(c.c_str());
-}
+
+/**
+ * Check if command exist
+ * 
+ * It uses the `which` command to check the existence
+ */
+bool commandExist(std::string command);
 
 
 
-std::string findCompiler(Language lang)
-{
-    switch (lang)
-    {
-    case C:
-        if (commandExist(GCC))
-            return GCC;
-        else if (commandExist(CLANG))
-            return CLANG;
 
-        break;
-    
-    case CPP:
-        if (commandExist(GPP))
-            return GPP;
-        else if (commandExist(CLANGPP))
-            return CLANGPP;
-
-        break;
-
-    case OCAML:
-    case RUST:
-
-        break;
-
-    default:
-        break;
-    }
-    // Other files
-
-    return "";
-}
+/**
+ * Search for a compiler appropriate with the input language
+ * 
+ * @param lang language use in the input
+ */
+std::string findCompiler(Language lang);
 
 
 
-void compile(Input in) 
-{
-    std::string compiler = findCompiler(in.getLanguage());
-    
-    bool found = false;
-    for (auto f : in.getFlags())
-        if (f == "g")
-            found = true;
 
-    std::string compiler_command;
-    if (found)
-        compiler_command = compiler + in.fullCommand();
-    else
-        compiler_command = compiler + " -g " + in.fullCommand();
-    
-    int o = system(compiler_command.c_str());
-}
+/**
+ * Run compiler for the input
+ * It adds the `g` flag if it is not in the input flags
+ * 
+ * @param in user input
+ */
+void compile(Input in);
