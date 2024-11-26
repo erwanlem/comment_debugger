@@ -4,7 +4,6 @@
 #include<stdlib.h>
 #include<ctype.h>
 #include "comments.h"
-//#include "../../reader.h"
 
 
 extern int lineno;
@@ -39,7 +38,7 @@ struct comments list_comments;
 
 instructions
     : instr SEMI instructions
-    | instr SEMI
+    | 
     ;
 
 instr

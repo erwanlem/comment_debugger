@@ -14,6 +14,7 @@ add_executable(debugTool
     provider.h
     reader.cpp
     reader.h
+    compile.h
 )
 add_subdirectory(cplusplus)
 target_link_libraries(debugTool parse)

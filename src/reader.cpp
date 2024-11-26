@@ -31,8 +31,6 @@ std::vector<Comment> readComments(std::string path)
         if (comm->name == NULL) name = "";
         else name = std::string(comm->name);
 
-        //std::cout << "var = " << var << std::endl;
-
         c.push_back( Comment(name, var, comm->line) );
 
     }

@@ -3,13 +3,14 @@
 #include <mutex>
 
 namespace cplusplus {
+    using namespace std;
 
-    void send_output(bool &finished, std::string &buffer, std::mutex &access) 
+    void send_output(bool &finished, string &buffer, mutex &access) 
     {
         while (!finished) {
             access.lock();
-            if (buffer.find("(gdb)") != std::string::npos) {
-                std::cout << buffer << std::endl << std::endl;
+            if (buffer.find("(gdb)") != string::npos) {
+                //cout << buffer << endl << endl;
                 buffer = "";
             }
             access.unlock();
@@ -17,19 +18,19 @@ namespace cplusplus {
     }
 
 
-    void run_gdb(std::vector<Command> commands) {
-        std::mutex m;
-        std::string buffer;
+    void run_gdb(string exe, vector<Command> commands) {
+        mutex m;
+        string buffer;
         buffer = "";
         bool finished = false;
 
-        gdb_proc* gdb = gdb_connect("../gdb_test/test");
+        gdb_proc* gdb = gdb_connect(exe);
 
         // reader thread
-        std::thread th1(gdb_read, gdb, std::ref(buffer), std::ref(m));
+        thread th1(gdb_read, gdb, ref(buffer), ref(m));
 
         // output thread
-        std::thread th2(send_output, std::ref(finished), std::ref(buffer), std::ref(m));
+        thread th2(send_output, ref(finished), ref(buffer), ref(m));
 
         for (Command c : commands) {
             gdb_send(gdb, c.c_str());
@@ -46,14 +47,11 @@ namespace cplusplus {
 
 
     void
-    run(std::vector<Comment>& comments)
+    run(string exe, vector<Comment>& comments)
     {
-        std::vector<Command> commands = generateCommands(comments);
+        vector<Command> commands = generateCommands(comments);
 
-        for (Command& c : commands) {
-            std::cout << "> " << c << std::endl;
-        }
-        //run_gdb(commands);
+        run_gdb(exe, commands);
 
     }
 

@@ -7,7 +7,7 @@ using namespace std;
 
 namespace cplusplus {
 
-    #define RUN "exec-run\n"
+    #define RUN "-exec-run\n"
     #define QUIT "quit\n"
 
     vector<Command> generateCommands(vector<Comment>& comments) {
@@ -19,7 +19,6 @@ namespace cplusplus {
             commands.push_back("-break-insert " + to_string(c.getLine()) + "\n");
             
             if (c.hasVar()) {
-                cout << ">>" << c.getVar() << endl;
                 commands.push_back("-break-commands " + to_string(bkpt_number++) + string(" \"print ") 
                                         + c.getVar() + "\" " + "\"continue\"\n");
             }

@@ -67,7 +67,7 @@ gdb_proc* gdb_connect(string path)
 		close(inpipefd[0]);
 
 		//replace tee with your process
-		execl("/usr/bin/gdb", "gdb", path, "--interpreter=mi4", "--silent", (char*) NULL);
+		execl("/usr/bin/gdb", "gdb", path.c_str(), "--interpreter=mi4", "--silent", (char*) NULL);
 
 		// Nothing below this line should be executed by child process. If so, 
 		// it means that the execl function wasn't successfull, so lets exit:

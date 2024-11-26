@@ -21,7 +21,7 @@ namespace cplusplus {
      * 
      * @param comments Debug comments describing user request
      */
-    void run(std::vector<Comment>& comments);
+    void run(std::string exe, std::vector<Comment>& comments);
 
 
 }
