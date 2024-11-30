@@ -7,9 +7,9 @@
 
 
 extern int lineno;
-extern FILE* yyin;
-int yylex (void);
-void yyerror (char const *);
+extern FILE* fin;
+int flex (void);
+void ferror (char const *);
 void new_comment(char* name, char* vars, int line);
 struct comments list_comments;
 
@@ -20,6 +20,7 @@ struct comments list_comments;
   char* strval;
 }
 
+%define api.prefix {f}
 
 %token COMMENT
 %token IDENT
@@ -55,23 +56,23 @@ variable
 
 %%
 
-void yyerror(char const* s)
+void ferror(char const* s)
 {
-  fprintf(stderr, "Parser error : %s (line %d)\n",s ,lineno);
+  fprintf(stderr, "Parser error : %s (line %d)\n", s, lineno);
 }
 
 struct comments parseComment(FILE* in) {
     list_comments.comment_list = (struct comment**) malloc(0);
     list_comments.nbComments = 0;
 
-    yyin = in;
+    fin = in;
 
-    yyparse();
+    fparse();
 
     return list_comments;
 }
 
-int yywrap()
+int fwrap()
 {
   return(1);
 }

@@ -1,3 +1,6 @@
+#ifndef __COMPILE__H__
+#define __COMPILE__H__
+
 #include <string>
 #include <string.h>
 #include "input.h"
@@ -54,3 +57,6 @@ std::string findCompiler(Language lang);
  * @param in user input
  */
 void compile(Input in);
+
+
+#endif

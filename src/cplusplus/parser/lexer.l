@@ -17,16 +17,15 @@
 
 %{
 
-
-
-#include "parser.h"
+#include "parser.hh"
 #include <string.h>
-
-
+#include "driver.hh"
 
 %}
 
-%option yylineno
+%option noyywrap 
+    // nounput noinput batch debug
+
     /* Variable name (Simplified for tests) */
 NUM                [0-9]+
 
@@ -38,58 +37,60 @@ NUM                [0-9]+
 
     /* Debugger comments */
 
-"{"                 {  yylval = yytext; return OPEN_CURL_BRACKET; }
-"}"                 {  yylval = yytext; return CLOSE_CURL_BRACKET; }
+"{"                             { return yy::parser::make_OPEN_CURL_BRACKET(); }
+"}"                             { return yy::parser::make_CLOSE_CURL_BRACKET(); }
 
-"["                 {  yylval = yytext; return OPEN_SQUARE_BRACKET; }
-"]"                 {  yylval = yytext; return CLOSE_SQUARE_BRACKET; }
+"["                             { return yy::parser::make_OPEN_SQUARE_BRACKET(); }
+"]"                             { return yy::parser::make_CLOSE_SQUARE_BRACKET(); }
 
-","                 {  yylval = yytext; return COMMA; }
+","                             { return yy::parser::make_COMMA(); }
 
-"^"                 {  yylval = yytext; return CIRC; }
+"^"                             { return yy::parser::make_CIRC(); }
 
-"*"                 {  yylval = yytext; return STAR; }
-"+"                 {  yylval = yytext; return PLUS; }
-"="                 {  yylval = yytext; return EQUAL; }
+"*"                             { return yy::parser::make_STAR(); }
+"+"                             { return yy::parser::make_PLUS(); }
+"="                             { return yy::parser::make_EQUAL(); }
 
-"~"                 {  yylval = yytext; return TILD; }
-"@"                 { yylval = yytext; return AT; }
-"&"                 { yylval = yytext; return AND; }
+"~"                             { return yy::parser::make_TILD(); }
+"@"                             { return yy::parser::make_AT(); }
+"&"                             { return yy::parser::make_AND(); }
 
-"done"              { yylval = yytext; return DONE; }
-"running"           { yylval = yytext; return RUNNING; }
-"connected"         { yylval = yytext; return CONNECTED; }
-"error"             { yylval = yytext; return ERROR; }
-"exit"              { yylval = yytext; return EXIT; }
+"done"                          { return yy::parser::make_DONE(yytext); }
+"running"                       { return yy::parser::make_RUNNING(yytext); }
+"connected"                     { return yy::parser::make_CONNECTED(yytext); }
+"error"                         { return yy::parser::make_ERROR(yytext); }
+"exit"                          { return yy::parser::make_EXIT(yytext); }
 
-"stopped"           { yylval = yytext; return STOPPED; }
+"stopped"                       { return yy::parser::make_STOPPED(yytext); }
 
-"thread-group-added"      { yylval = yytext; return ASYNC_RECORD_1; }
-"thread-group-removed"    { yylval = yytext; return ASYNC_RECORD_2; }
-"thread-group-started"    { yylval = yytext; return ASYNC_RECORD_3; }
-"thread-group-exited"     { yylval = yytext; return ASYNC_RECORD_4; }
-"thread-created"          { yylval = yytext; return ASYNC_RECORD_5; }
-"thread-exited"           { yylval = yytext; return ASYNC_RECORD_6; }
-"library-loaded"          { yylval = yytext; return ASYNC_RECORD_7; }
-"library-unloaded"        { yylval = yytext; return ASYNC_RECORD_8; }
-"thread-selected"         { yylval = yytext; return ASYNC_RECORD_9; }
-"breakpoint-created"      { yylval = yytext; return ASYNC_RECORD_10; }
-"breakpoint-modified"     { yylval = yytext; return ASYNC_RECORD_11; }
-"breakpoint-deleted"      { yylval = yytext; return ASYNC_RECORD_12; }
-"record-started"          { yylval = yytext; return ASYNC_RECORD_13; }
-"record-stopped"          { yylval = yytext; return ASYNC_RECORD_14; }
+"thread-group-added"            { return yy::parser::make_ASYNC_RECORD_1(); }
+"thread-group-removed"          { return yy::parser::make_ASYNC_RECORD_2(); }
+"thread-group-started"          { return yy::parser::make_ASYNC_RECORD_3(); }
+"thread-group-exited"           { return yy::parser::make_ASYNC_RECORD_4(); }
+"thread-created"                { return yy::parser::make_ASYNC_RECORD_5(); }
+"thread-exited"                 { return yy::parser::make_ASYNC_RECORD_6(); }
+"library-loaded"                { return yy::parser::make_ASYNC_RECORD_7(); }
+"library-unloaded"              { return yy::parser::make_ASYNC_RECORD_8(); }
+"thread-selected"               { return yy::parser::make_ASYNC_RECORD_9(); }
+"breakpoint-created"            { return yy::parser::make_ASYNC_RECORD_10(); }
+"breakpoint-modified"           { return yy::parser::make_ASYNC_RECORD_11(); }
+"breakpoint-deleted"            { return yy::parser::make_ASYNC_RECORD_12(); }
+"record-started"                { return yy::parser::make_ASYNC_RECORD_13(); }
+"record-stopped"                { return yy::parser::make_ASYNC_RECORD_14(); }
 
-"(gdb)"                         { yylval = yytext; return GDB; }
+"(gdb)"                         { return yy::parser::make_GDB(); }
 
-\r\n                            { return NL; }
-\n                              { return NL; }
+\r\n                            { return yy::parser::make_NL(); }
+\n                              { return yy::parser::make_NL(); }
 
 
-\"(\\.|[^\\"])*\"               { return CSTRING; }
+\"(\\.|[^\\"])*\"               { return yy::parser::make_CSTRING(yytext); }
 
-[a-zA-Z_\-]([a-zA-Z_\-]|[0-9])* { return STRING; }
+[a-zA-Z_\-]([a-zA-Z_\-]|[0-9])* { return yy::parser::make_STRING(yytext); }
 
-{NUM}               { yylval = yytext; return DIGITS; }
+{NUM}                           { return yy::parser::make_DIGITS( atoi(yytext) ); }
+
+.                               {}
 
 %%
 
@@ -97,3 +98,13 @@ NUM                [0-9]+
     /*****************/
     /*** User code ***/
     /*****************/
+
+
+void set_input_string(const char* in) {
+    yy_scan_string(in);
+}
+
+void end_lexical_scan(void) {
+  yy_delete_buffer(YY_CURRENT_BUFFER);
+}
+

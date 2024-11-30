@@ -1,5 +1,11 @@
-// @ name i
-// @ name i
-// @ name 0
-// @ name i
-// @ name1
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, char const *argv[])
+{
+    int i = 0;
+    // @ var i
+
+    return 0;
+}

@@ -7,11 +7,16 @@ namespace cplusplus {
 
     void send_output(bool &finished, string &buffer, mutex &access) 
     {
+        string cmd;
+        size_t index;
         while (!finished) {
             access.lock();
             if (buffer.find("(gdb)") != string::npos) {
-                //cout << buffer << endl << endl;
-                buffer = "";
+                index = buffer.find("(gdb)");
+                cmd = buffer.substr(0, index+7);
+                buffer = buffer.substr(index+7, buffer.size());
+                //cout << cmd << endl << endl;
+                parse_output(cmd.c_str());
             }
             access.unlock();
         }

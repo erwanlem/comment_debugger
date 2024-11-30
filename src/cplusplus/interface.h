@@ -9,8 +9,9 @@
 #include <thread>
 
 
-namespace cplusplus {
+void parse_output(const char* in);
 
+namespace cplusplus {
 
     /**
      * run debug process for C++.

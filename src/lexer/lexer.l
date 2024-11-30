@@ -40,12 +40,12 @@ ALPHANUM           [a-zA-Z0-9]+
     /* Debugger comments */
 "//"                                        { return COMMENT; }
 
-{NUM}                                       { yylval.intval = atoi(yytext);
+{NUM}                                       { flval.intval = atoi(yytext);
                                              return NUMBER; }
 
 {ALPHANUM}                                  { cpy = (char *)calloc(strlen(yytext)+1,sizeof(char));
                                               strcpy(cpy, yytext);
-                                              yylval.strval = cpy;
+                                              flval.strval = cpy;
                                               return IDENT; 
                                             }
 
@@ -73,4 +73,4 @@ ALPHANUM           [a-zA-Z0-9]+
     /*** User code ***/
     /*****************/
 
-int yywrap(){return(1);}
+int fwrap(){return(1);}
