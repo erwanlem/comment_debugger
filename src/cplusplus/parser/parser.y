@@ -23,9 +23,7 @@
 
 %define api.token.raw
 
-
 %define parse.error verbose
-//%define api.value.type {char*}
 
 %define api.token.constructor
 %define api.value.type variant
@@ -35,12 +33,16 @@
 }
 
 %code requires {
-    #include "value.h"
-    #include "async.h"
-    #include "output.h"
+    #include "parser_class/value.h"
+    #include "parser_class/outbandrecord.h"
+    #include "parser_class/streamRecord.h"
+    #include "parser_class/resultRecord.h"
+    #include "parser_class/output.h"
+    #include "parser_class/asyncRecord.h"
+    #include "parser_class/async.h"
 }
 
-%parse-param {std::vector<gdb::Output> &out}
+%parse-param {std::vector<gdb::Output*> &out}
 
 %token <int> DIGITS
 %token NL
@@ -73,32 +75,31 @@
 %type <gdb::Result> result
 %type <gdb::AsyncOutput::AsyncClass> async_class
 %type <gdb::ResultRecord::ResultClass> result_class
-%type <gdb::AsyncRecord> notify_async_output status_async_output exec_async_output async_record
+%type <gdb::AsyncRecord*> notify_async_output status_async_output exec_async_output async_record
 %type <gdb::AsyncOutput> async_output
-%type <gdb::StreamRecord> stream_record
-%type <gdb::OutBandRecord> out_of_band_record
-%type <gdb::ResultRecord> result_record
-%type <std::vector<gdb::Output>> output
+%type <gdb::StreamRecord*> stream_record
+%type <gdb::OutBandRecord*> out_of_band_record
+%type <gdb::ResultRecord*> result_record
+%type <std::vector<gdb::Output*>> output
 
 %%
 
 output:
-    out_of_band_record output                           { out.push_back($1); $$ = out; }
-    | result_record GDB NL                              { out.push_back($1); $$ = out; }
+    out_of_band_record output                           { out.push_back($1); }
+    | result_record GDB NL                              { out.push_back($1); }
     | result_record out_of_band_record GDB NL           { // TODO Verify order
                                                             out.push_back($1);
                                                             out.push_back($2);
-                                                            $$ = out;
                                                         }
-    | GDB NL                                            { $$ = out; }
-    | error NL                                          { $$ = out; }
+    | GDB NL                                            { }
+    | error NL                                          { }
     ;
 
 result_record:
-    CIRC result_class COMMA comma_result NL             { $$ = gdb::ResultRecord($2, $4); }
-    | CIRC result_class NL                              { $$ = gdb::ResultRecord($2); }
-    | DIGITS CIRC result_class NL                       { $$ = gdb::ResultRecord($3); }
-    | DIGITS CIRC result_class COMMA comma_result NL    { $$ = gdb::ResultRecord($3, $5); }
+    CIRC result_class COMMA comma_result NL             { $$ = new gdb::ResultRecord($2, $4); }
+    | CIRC result_class NL                              { $$ = new gdb::ResultRecord($2); }
+    | DIGITS CIRC result_class NL                       { $$ = new gdb::ResultRecord($3); }
+    | DIGITS CIRC result_class COMMA comma_result NL    { $$ = new gdb::ResultRecord($3, $5); }
     ;
 
 
@@ -123,21 +124,23 @@ async_record:
     ;
 
 exec_async_output:
-    STAR async_output NL                        { $$ = gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::EXEC, $2); }
-    | STAR result_class COMMA comma_result NL   { $$ = gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::EXEC, 
-                                                                        gdb::AsyncOutput(gdb::AsyncOutput::AsyncClass::UNDEFINED, $4)); 
+    STAR async_output NL                        { $$ = new gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::EXEC, $2); }
+                                                // This case is strange
+    | STAR result_class COMMA comma_result NL   { $$ = new gdb::AsyncRecord(
+                                                            gdb::AsyncRecord::AsyncType::EXEC, 
+                                                            gdb::AsyncOutput(gdb::AsyncOutput::AsyncClass::UNDEFINED, $4)); 
                                                 }
-    | DIGITS STAR async_output NL {}            { $$ = gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::EXEC, $3); }
+    | DIGITS STAR async_output NL {}            { $$ = new gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::EXEC, $3); }
     ;
 
 status_async_output:
-    PLUS async_output NL                        { $$ = gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::STATUS, $2); }
-    | DIGITS PLUS async_output NL               { $$ = gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::STATUS, $3); }
+    PLUS async_output NL                        { $$ = new gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::STATUS, $2); }
+    | DIGITS PLUS async_output NL               { $$ = new gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::STATUS, $3); }
     ;
 
 notify_async_output:
-    EQUAL async_output NL                       { $$ = gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::NOTIFY, $2); }
-    | DIGITS EQUAL async_output NL              { $$ = gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::NOTIFY, $3); }
+    EQUAL async_output NL                       { $$ = new gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::NOTIFY, $2); }
+    | DIGITS EQUAL async_output NL              { $$ = new gdb::AsyncRecord(gdb::AsyncRecord::AsyncType::NOTIFY, $3); }
     ;
 
 async_output:
@@ -201,22 +204,23 @@ list :
 comma_value:
     value COMMA comma_value                                 { $3.push_back($1); $$ = $3; }
     | value                                                 { 
-                                                                std::vector<gdb::Value> v(0); 
-                                                                v.push_back($1); $$ = v; 
+                                                                std::vector<gdb::Value> v; 
+                                                                v.push_back($1); 
+                                                                $$ = v; 
                                                             }
     ;
 
 stream_record :
-    console_stream_output                                   { $$ = gdb::StreamRecord(
+    console_stream_output                                   { $$ = new gdb::StreamRecord(
                                                                 gdb::StreamRecord::StreamType::CONSOLE,
-                                                                $1);
+                                                                $1 );
                                                             }
-    | target_stream_output                                  { $$ = gdb::StreamRecord(
+    | target_stream_output                                  { $$ = new gdb::StreamRecord(
                                                                 gdb::StreamRecord::StreamType::TARGET,
-                                                                $1); }
-    | log_stream_output                                     { $$ = gdb::StreamRecord(
+                                                                $1 ); }
+    | log_stream_output                                     { $$ = new gdb::StreamRecord(
                                                                 gdb::StreamRecord::StreamType::LOG,
-                                                                $1); }
+                                                                $1 ); }
     ;
 
 console_stream_output :
@@ -233,39 +237,9 @@ log_stream_output :
 
 %%
 
-void set_input_string(const char* in);
-void end_lexical_scan(void);
+#include "run.h"
 
 void yy::parser::error (const std::string& m)
 {
   std::cerr << ": " << m << '\n';
-}
-
-void parse_output(const char* in) {
-    //std::cout << in << std::endl;
-
-    std::vector<gdb::Output> outputs;
-
-    set_input_string(in);
-    yy::parser parse(outputs);
-    parse();
-    end_lexical_scan();
-
-    /*for (auto &out : outputs) {
-        if (out.isStream()) {
-            std::cout << "NEW STREAM" << std::endl;
-            gdb::StreamRecord* s = static_cast<gdb::StreamRecord*>(&out);
-            if ( s->getType() == gdb::StreamRecord::StreamType::CONSOLE ) {
-                std::cout << "CONSOLE" << std::endl;
-            } else if ( s->getType() == gdb::StreamRecord::StreamType::TARGET ) {
-                std::cout << s->getValue() << std::endl;
-            } else if ( s->getType() == gdb::StreamRecord::StreamType::LOG ) {
-                //std::cout << s->getValue() << std::endl;
-            }
-        } else if (out.isResult()) {
-            std::cout << "NEW RESULT" << std::endl;
-        } else if (out.isAsync()) {
-            std::cout << "NEW ASYNC" << std::endl;
-        }
-    }*/
 }

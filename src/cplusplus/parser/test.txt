@@ -1,3 +1,0 @@
-=thread-group-added,id="i1"
-~"Reading symbols from ../gdb_test/test...\n"
-(gdb)

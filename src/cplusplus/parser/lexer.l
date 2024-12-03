@@ -21,6 +21,10 @@
 #include <string.h>
 #include "driver.hh"
 
+namespace cpp {
+    char* cpy;
+}
+
 %}
 
 %option noyywrap 
@@ -55,13 +59,13 @@ NUM                [0-9]+
 "@"                             { return yy::parser::make_AT(); }
 "&"                             { return yy::parser::make_AND(); }
 
-"done"                          { return yy::parser::make_DONE(yytext); }
-"running"                       { return yy::parser::make_RUNNING(yytext); }
-"connected"                     { return yy::parser::make_CONNECTED(yytext); }
-"error"                         { return yy::parser::make_ERROR(yytext); }
-"exit"                          { return yy::parser::make_EXIT(yytext); }
+"done"                          { return yy::parser::make_DONE(std::string(yytext)); }
+"running"                       { return yy::parser::make_RUNNING(std::string(yytext)); }
+"connected"                     { return yy::parser::make_CONNECTED(std::string(yytext)); }
+"error"                         { return yy::parser::make_ERROR(std::string(yytext)); }
+"exit"                          { return yy::parser::make_EXIT(std::string(yytext)); }
 
-"stopped"                       { return yy::parser::make_STOPPED(yytext); }
+"stopped"                       { return yy::parser::make_STOPPED(std::string(yytext)); }
 
 "thread-group-added"            { return yy::parser::make_ASYNC_RECORD_1(); }
 "thread-group-removed"          { return yy::parser::make_ASYNC_RECORD_2(); }
@@ -84,11 +88,15 @@ NUM                [0-9]+
 \n                              { return yy::parser::make_NL(); }
 
 
-\"(\\.|[^\\"])*\"               { return yy::parser::make_CSTRING(yytext); }
+\"(\\.|[^\\"])*\"               {
+                                    return yy::parser::make_CSTRING(yytext); 
+                                }
 
-[a-zA-Z_\-]([a-zA-Z_\-]|[0-9])* { return yy::parser::make_STRING(yytext); }
+[a-zA-Z_\-]([a-zA-Z_\-]|[0-9])* {
+                                    return yy::parser::make_STRING(yytext); 
+                                }
 
-{NUM}                           { return yy::parser::make_DIGITS( atoi(yytext) ); }
+{NUM}                           { return yy::parser::make_DIGITS( std::stoi(yytext) ); }
 
 .                               {}
 

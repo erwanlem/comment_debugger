@@ -19,12 +19,12 @@ FLEX_TARGET(gdbCppLexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp
 
 ADD_FLEX_BISON_DEPENDENCY(gdbCppLexer gdbCppParser)
 
+
 add_library(parseCppOutput
     STATIC
     driver.hh
-    value.h
-    async.h
-    output.h
     ${BISON_gdbCppParser_OUTPUTS}
     ${FLEX_gdbCppLexer_OUTPUTS}
 )
+
+target_include_directories(parseCppOutput PUBLIC parser_class)

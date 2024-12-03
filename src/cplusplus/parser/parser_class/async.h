@@ -6,8 +6,10 @@
 #include <string>
 
 namespace gdb {
-    using namespace std;
 
+    /**
+     * Class AsyncOutput
+     */
     class AsyncOutput {
         public:
             enum AsyncClass {
@@ -19,10 +21,10 @@ namespace gdb {
 
         private:
             AsyncClass asyncClass;
-            vector<Value> results;
+            std::vector<Value> results;
 
         public:
-            AsyncOutput(AsyncClass clss, vector<Value> results)
+            AsyncOutput(AsyncClass clss, std::vector<Value> results)
             : asyncClass(clss)
             , results(results) 
             {};   
